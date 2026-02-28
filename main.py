@@ -11,11 +11,11 @@ from config import (
     TOPIC_SWITCH_EVERY,
     PAUSE_BETWEEN_TURNS,
 )
-from dialogue import generate_response, reset_history
-from tts import text_to_speech, play_audio, estimate_duration
-from overlay import update_overlay
-from transcript import init_transcript, log_message
-from avatar import connect as connect_obs, set_avatar, set_both_idle
+from core.dialogue import generate_response, reset_history
+from core.tts import text_to_speech, play_audio, estimate_duration
+from core.overlay import update_overlay
+from core.transcript import init_transcript, log_message
+from core.avatar import connect as connect_obs, set_avatar, set_both_idle
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -53,7 +53,7 @@ def main():
         set_both_idle()
 
         # Start subtle idle motion for both avatars
-        from avatar import start_idle_animation
+        from core.avatar import start_idle_animation
         start_idle_animation("agent1")
         start_idle_animation("agent2")
 
@@ -130,7 +130,7 @@ def main():
                 # Continue to next turn instead of crashing
 
         # ── Stop idle animation ──────────────────────────
-        from avatar import stop_idle_animation
+        from core.avatar import stop_idle_animation
         stop_idle_animation()
 
         # ── Summary statistics ──────────────────────────

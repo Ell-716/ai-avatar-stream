@@ -1,8 +1,25 @@
 from datetime import datetime
 from config import TRANSCRIPT_FILE
 from logger import get_logger
+from typing import Optional, Callable, Dict
 
 logger = get_logger(__name__)
+
+# Callback for real-time transcript broadcasting (WebSocket)
+_broadcast_callback: Optional[Callable[[Dict], None]] = None
+
+
+def set_broadcast_callback(callback: Optional[Callable[[Dict], None]]):
+    """
+    Set callback for real-time transcript broadcasting.
+
+    Args:
+        callback: Function to call with transcript messages.
+                  Receives dict with: timestamp, agent_name, text, topic
+    """
+    global _broadcast_callback
+    _broadcast_callback = callback
+    logger.debug(f"Broadcast callback {'set' if callback else 'cleared'}")
 
 
 def init_transcript():
@@ -25,8 +42,10 @@ def log_message(agent_name: str, text: str, topic: str | None = None):
     """
     Append a single message to the transcript.
     Optionally logs a topic change marker.
+    Also broadcasts to WebSocket subscribers if callback is set.
     """
     timestamp = datetime.now().strftime("%H:%M:%S")
+    iso_timestamp = datetime.now().isoformat()
 
     try:
         with open(TRANSCRIPT_FILE, "a", encoding="utf-8") as f:
@@ -35,6 +54,19 @@ def log_message(agent_name: str, text: str, topic: str | None = None):
             if text:  # Only write message if text is not empty
                 f.write(f"[{timestamp}] {agent_name}: {text}\n")
         logger.debug(f"Transcript updated: {agent_name}")
+
+        # Broadcast to WebSocket if callback registered
+        if _broadcast_callback:
+            message = {
+                "timestamp": iso_timestamp,
+                "agent_name": agent_name,
+                "text": text,
+                "topic": topic
+            }
+            try:
+                _broadcast_callback(message)
+            except Exception as e:
+                logger.error(f"Error calling broadcast callback: {e}")
     except PermissionError as e:
         logger.error(f"Permission denied writing to transcript file: {e}")
     except OSError as e:

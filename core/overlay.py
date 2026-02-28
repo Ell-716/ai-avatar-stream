@@ -174,7 +174,7 @@ def update_overlay(agent_key: str, text: str, topic: str):
 
     # Force OBS browser source to refresh via WebSocket
     try:
-        from avatar import ws
+        from core.avatar import ws
         if ws is not None:
             from obswebsocket import requests as obs_requests
             # Press the "Refresh cache" button programmatically
