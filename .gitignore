@@ -2,7 +2,6 @@
 .env
 .claude/
 audio/
-avatars/*.png
 avatars/*.mp4
 *.pyc
 __pycache__/
