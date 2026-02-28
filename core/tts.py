@@ -2,7 +2,7 @@ import os
 import platform
 import time
 import subprocess
-from avatar import set_avatar
+from core.avatar import set_avatar
 from elevenlabs.client import ElevenLabs
 from elevenlabs.core import ApiError as ElevenLabsAPIError
 from config import ELEVENLABS_API_KEY, AGENTS, AUDIO_DIR, CHARS_PER_SECOND
