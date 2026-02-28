@@ -1,0 +1,11 @@
+.env/
+.env
+.claude/
+audio/
+avatars/*.png
+avatars/*.mp4
+*.pyc
+__pycache__/
+dialogue.html
+transcript.txt
+.venv/
