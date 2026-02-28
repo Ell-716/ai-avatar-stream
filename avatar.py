@@ -13,26 +13,52 @@ Requires:
 """
 
 from obswebsocket import obsws, requests as obs_requests
+from obswebsocket.exceptions import ConnectionFailure
 from config import AGENTS
+from logger import get_logger
 import os
 import threading
 import time
+
+logger = get_logger(__name__)
 
 # OBS WebSocket connection
 ws = None
 
 
-def connect():
-    """Connect to OBS WebSocket. Call once at startup."""
+def connect(max_retries: int = 3, retry_delay: float = 2.0):
+    """
+    Connect to OBS WebSocket. Call once at startup.
+
+    Args:
+        max_retries: Maximum number of connection attempts
+        retry_delay: Delay between retry attempts in seconds
+    """
     global ws
-    try:
-        ws = obsws("127.0.0.1", 4455, "")  # host, port, password
-        ws.connect()
-        print("✅ Connected to OBS via WebSocket")
-    except Exception as e:
-        print(f"⚠️  Could not connect to OBS WebSocket: {e}")
-        print("   Avatar swapping will be disabled.")
-        ws = None
+
+    for attempt in range(max_retries):
+        try:
+            ws = obsws("127.0.0.1", 4455, "")  # host, port, password
+            ws.connect()
+            logger.info("Connected to OBS via WebSocket")
+            return
+        except ConnectionFailure as e:
+            if attempt < max_retries - 1:
+                logger.warning(
+                    f"OBS WebSocket connection failed (attempt {attempt + 1}/{max_retries}): {e}. "
+                    f"Retrying in {retry_delay}s..."
+                )
+                time.sleep(retry_delay)
+            else:
+                logger.warning(
+                    f"Could not connect to OBS WebSocket after {max_retries} attempts: {e}. "
+                    "Avatar swapping will be disabled."
+                )
+                ws = None
+        except Exception as e:
+            logger.error(f"Unexpected error connecting to OBS WebSocket: {e}")
+            ws = None
+            return
 
 
 def set_avatar(agent_key: str, mouth: str):
@@ -43,10 +69,13 @@ def set_avatar(agent_key: str, mouth: str):
     mouth: "idle" | "small" | "medium"
     """
     if ws is None:
+        # WebSocket not connected - skip silently at DEBUG level
+        logger.debug(f"Skipping avatar swap for {agent_key} (WebSocket not connected)")
         return
 
     agent = AGENTS.get(agent_key)
     if agent is None:
+        logger.error(f"Invalid agent key: {agent_key}")
         return
 
     source_name = agent["name"]
@@ -58,7 +87,8 @@ def set_avatar(agent_key: str, mouth: str):
     elif mouth == "medium":
         image_path = agent["avatar_talk_medium"]
     else:
-        return  # invalid mouth state
+        logger.warning(f"Invalid mouth state '{mouth}' for {agent_key}")
+        return
 
     try:
         abs_path = os.path.abspath(image_path)
@@ -69,14 +99,21 @@ def set_avatar(agent_key: str, mouth: str):
                 overlay=True,
             )
         )
+        logger.debug(f"Avatar swapped: {agent_key} → {mouth}")
+
     except Exception as e:
-        print(f"⚠️ Avatar swap failed for {agent_key}: {e}")
+        error_msg = str(e)
+        if "No source" in error_msg or "not found" in error_msg.lower():
+            logger.error(f"OBS source not found: '{source_name}'. Check OBS scene configuration.")
+        else:
+            logger.warning(f"Avatar swap failed for {agent_key}: {e}")
 
 
 def set_both_idle():
     """Set both avatars to idle state."""
     set_avatar("agent1", "idle")
     set_avatar("agent2", "idle")
+
 
 _idle_thread_running = False
 
@@ -89,9 +126,11 @@ def start_idle_animation(agent_key: str, interval: float = 0.8, movement: int = 
     """
     global _idle_thread_running
     if _idle_thread_running:
+        logger.debug(f"Idle animation already running for {agent_key}")
         return
 
     _idle_thread_running = True
+    logger.debug(f"Starting idle animation for {agent_key}")
 
     def idle_loop():
         toggle = True
@@ -111,3 +150,4 @@ def stop_idle_animation():
     """Stop all idle animations."""
     global _idle_thread_running
     _idle_thread_running = False
+    logger.debug("Stopped idle animations")

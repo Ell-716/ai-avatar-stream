@@ -6,6 +6,9 @@ so the on-stream subtitle updates in real time.
 """
 
 from config import AGENTS, DIALOGUE_HTML
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def update_overlay(agent_key: str, text: str, topic: str):
@@ -150,9 +153,25 @@ def update_overlay(agent_key: str, text: str, topic: str):
 </body>
 </html>"""
 
-    with open(DIALOGUE_HTML, "w", encoding="utf-8") as f:
-        f.write(html)
-    
+    # Validate HTML content before writing
+    if not html or len(html) < 100:
+        logger.error("Generated HTML is too short or empty")
+        return
+
+    try:
+        with open(DIALOGUE_HTML, "w", encoding="utf-8") as f:
+            f.write(html)
+        logger.debug(f"Overlay updated for {name}")
+    except PermissionError as e:
+        logger.critical(f"Permission denied writing overlay file {DIALOGUE_HTML}: {e}")
+        return
+    except OSError as e:
+        logger.critical(f"File system error writing overlay file {DIALOGUE_HTML}: {e}")
+        return
+    except Exception as e:
+        logger.error(f"Unexpected error writing overlay file: {e}")
+        return
+
     # Force OBS browser source to refresh via WebSocket
     try:
         from avatar import ws
@@ -163,6 +182,7 @@ def update_overlay(agent_key: str, text: str, topic: str):
                 inputName="Dialogue",
                 propertyName="refreshnocache"
             ))
-    except:
-        pass  # Fail silently if OBS not connected or command fails
-    
+            logger.debug("OBS browser source refreshed")
+    except Exception as e:
+        # Fail silently if OBS not connected or command fails
+        logger.debug(f"Could not refresh OBS browser source: {e}")
