@@ -8,3 +8,4 @@ __pycache__/
 dialogue.html
 transcript.txt
 .venv/
+logs/*.log
