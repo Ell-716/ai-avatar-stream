@@ -12,8 +12,7 @@ from typing import Dict, List
 from fastapi import APIRouter, HTTPException
 
 import config as app_config
-from backend.models.schemas import (AgentConfig, ConfigUpdate,
-                                    ConfigUpdateResponse)
+from backend.models.schemas import AgentConfig, ConfigUpdate, ConfigUpdateResponse
 from logger import get_logger
 
 logger = get_logger(__name__)

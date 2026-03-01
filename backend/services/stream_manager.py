@@ -17,15 +17,12 @@ from datetime import datetime
 from queue import Queue  # Thread-safe queue for async/sync communication
 from typing import Dict, List, Optional
 
-from config import (AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS,
-                    TOPIC_SWITCH_EVERY, TOPICS)
+from config import AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS, TOPIC_SWITCH_EVERY, TOPICS
 from core.avatar import connect as connect_obs
-from core.avatar import (set_avatar, set_both_idle, start_idle_animation,
-                         stop_idle_animation)
+from core.avatar import set_avatar, set_both_idle, start_idle_animation, stop_idle_animation
 from core.dialogue import generate_response, reset_history
 from core.overlay import update_overlay
-from core.transcript import (init_transcript, log_message,
-                             set_broadcast_callback)
+from core.transcript import init_transcript, log_message, set_broadcast_callback
 from core.tts import play_audio, text_to_speech
 from logger import get_logger
 

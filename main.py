@@ -3,8 +3,7 @@ import random
 import time
 from datetime import datetime
 
-from config import (AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS,
-                    TOPIC_SWITCH_EVERY, TOPICS)
+from config import AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS, TOPIC_SWITCH_EVERY, TOPICS
 from core.avatar import connect as connect_obs
 from core.avatar import set_avatar, set_both_idle
 from core.dialogue import generate_response, reset_history
