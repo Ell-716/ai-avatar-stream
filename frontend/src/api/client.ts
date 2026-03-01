@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { ConfigUpdate, WebSocketMessage } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -29,12 +30,12 @@ export const configAPI = {
   getTopics: () =>
     api.get('/api/config/topics'),
 
-  updateConfig: (config: any) =>
+  updateConfig: (config: ConfigUpdate) =>
     api.put('/api/config', config),
 };
 
 // WebSocket helper
-export const createWebSocket = (onMessage: (data: any) => void) => {
+export const createWebSocket = (onMessage: (data: WebSocketMessage) => void) => {
   // Determine WebSocket URL based on environment
   const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsHost = API_BASE_URL
@@ -49,7 +50,7 @@ export const createWebSocket = (onMessage: (data: any) => void) => {
   };
 
   ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+    const data = JSON.parse(event.data) as WebSocketMessage;
     onMessage(data);
   };
 

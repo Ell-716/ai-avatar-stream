@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Settings } from 'lucide-react';
+import type { ConfigUpdate } from '../types';
 
 interface Props {
-  onSave: (config: any) => void;
+  onSave: (config: ConfigUpdate) => void;
   disabled: boolean;
   initialMaxTurns: number;
   initialPause: number;
