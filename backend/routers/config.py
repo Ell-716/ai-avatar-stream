@@ -63,7 +63,7 @@ async def get_settings():
         "context_window": app_config.CONTEXT_WINDOW,
         "groq_model": app_config.GROQ_MODEL,
         "audio_dir": app_config.AUDIO_DIR,
-        "chars_per_second": app_config.CHARS_PER_SECOND
+        "chars_per_second": app_config.CHARS_PER_SECOND,
     }
 
 
@@ -97,17 +97,14 @@ async def update_config(config_update: ConfigUpdate):
     if config_update.topics is not None:
         if len(config_update.topics) < 1:
             raise HTTPException(
-                status_code=400,
-                detail="At least one topic is required"
+                status_code=400, detail="At least one topic is required"
             )
         app_config.TOPICS = config_update.topics
         updated_fields.append("topics")
 
     if not updated_fields:
         return ConfigUpdateResponse(
-            success=False,
-            message="No fields provided to update",
-            updated_fields=[]
+            success=False, message="No fields provided to update", updated_fields=[]
         )
 
     logger.info(f"Configuration updated: {updated_fields}")
@@ -115,5 +112,5 @@ async def update_config(config_update: ConfigUpdate):
     return ConfigUpdateResponse(
         success=True,
         message=f"Updated {len(updated_fields)} field(s): {', '.join(updated_fields)}",
-        updated_fields=updated_fields
+        updated_fields=updated_fields,
     )

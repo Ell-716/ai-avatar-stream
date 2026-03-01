@@ -12,11 +12,11 @@ ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 # ─── Conversation Settings ──────────────────────────────
-MAX_TURNS = 5                  # Total turns before stream ends
-CONTEXT_WINDOW = 6              # How many past messages agents remember
-TOPIC_SWITCH_EVERY = 8          # Switch topic every N turns
-PAUSE_BETWEEN_TURNS = 1         # Seconds of silence between turns
-CHARS_PER_SECOND = 15           # Estimate for audio duration calculation
+MAX_TURNS = 5  # Total turns before stream ends
+CONTEXT_WINDOW = 6  # How many past messages agents remember
+TOPIC_SWITCH_EVERY = 8  # Switch topic every N turns
+PAUSE_BETWEEN_TURNS = 1  # Seconds of silence between turns
+CHARS_PER_SECOND = 15  # Estimate for audio duration calculation
 
 # ─── File Paths ──────────────────────────────────────────
 AUDIO_DIR = "audio"

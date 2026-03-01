@@ -107,7 +107,9 @@ def set_avatar(agent_key: str, mouth: str):
     except Exception as e:
         error_msg = str(e)
         if "No source" in error_msg or "not found" in error_msg.lower():
-            logger.error(f"OBS source not found: '{source_name}'. Check OBS scene configuration.")
+            logger.error(
+                f"OBS source not found: '{source_name}'. Check OBS scene configuration."
+            )
         else:
             logger.warning(f"Avatar swap failed for {agent_key}: {e}")
 
@@ -119,6 +121,7 @@ def set_both_idle():
 
 
 _idle_thread_running = False
+
 
 def start_idle_animation(agent_key: str, interval: float = 0.8, movement: int = 2):
     """

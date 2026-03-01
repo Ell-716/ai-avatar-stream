@@ -17,14 +17,14 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 # Type variable for generic function signature
-F = TypeVar('F', bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 def retry_with_backoff(
     max_retries: int = 3,
     base_delay: float = 1.0,
     exponential_base: float = 2.0,
-    exceptions: tuple = (Exception,)
+    exceptions: tuple = (Exception,),
 ) -> Callable[[F], F]:
     """
     Decorator that retries a function with exponential backoff on failure.
@@ -44,6 +44,7 @@ def retry_with_backoff(
             response = requests.get("https://api.example.com")
             return response.json()
     """
+
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -62,7 +63,7 @@ def retry_with_backoff(
                         raise
 
                     # Calculate delay with exponential backoff
-                    delay = base_delay * (exponential_base ** attempt)
+                    delay = base_delay * (exponential_base**attempt)
                     logger.warning(
                         f"{func.__name__} failed (attempt {attempt + 1}/{max_retries + 1}): {e}. "
                         f"Retrying in {delay:.1f}s..."
@@ -74,4 +75,5 @@ def retry_with_backoff(
                 raise last_exception
 
         return wrapper  # type: ignore
+
     return decorator

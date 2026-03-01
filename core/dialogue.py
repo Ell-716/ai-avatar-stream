@@ -11,7 +11,9 @@ client = Groq(api_key=GROQ_API_KEY)
 conversation_history: list[dict] = []
 
 
-@retry_with_backoff(max_retries=3, base_delay=1, exceptions=(RateLimitError, APIError, Exception))
+@retry_with_backoff(
+    max_retries=3, base_delay=1, exceptions=(RateLimitError, APIError, Exception)
+)
 def generate_response(agent_key: str, topic: str) -> str:
     """
     Generate a response from the given agent using Groq.
@@ -34,14 +36,18 @@ def generate_response(agent_key: str, topic: str) -> str:
             messages.append(entry)
 
         # The current prompt — tell the agent to continue the discussion
-        messages.append({
-            "role": "user",
-            "content": f"The current topic is: {topic}. Respond naturally, continuing the discussion.",
-        })
+        messages.append(
+            {
+                "role": "user",
+                "content": f"The current topic is: {topic}. Respond naturally, continuing the discussion.",
+            }
+        )
 
         # Log context size for debugging
         context_size = len(conversation_history[-CONTEXT_WINDOW:])
-        logger.debug(f"Generating response for {agent['name']} with {context_size} context messages")
+        logger.debug(
+            f"Generating response for {agent['name']} with {context_size} context messages"
+        )
 
         response = client.chat.completions.create(
             messages=messages,

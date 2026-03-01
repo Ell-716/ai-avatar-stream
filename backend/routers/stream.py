@@ -45,9 +45,7 @@ async def start_stream(request: StreamStartRequest):
         raise HTTPException(status_code=409, detail=result["message"])
 
     return StreamStartResponse(
-        success=True,
-        message=result["message"],
-        status=StreamStatus(**result["status"])
+        success=True, message=result["message"], status=StreamStatus(**result["status"])
     )
 
 
@@ -67,10 +65,7 @@ async def stop_stream(request: StreamStopRequest):
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
 
-    return StreamStopResponse(
-        success=True,
-        message=result["message"]
-    )
+    return StreamStopResponse(success=True, message=result["message"])
 
 
 @router.get("/status", response_model=StreamStatus)

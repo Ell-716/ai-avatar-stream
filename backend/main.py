@@ -29,20 +29,20 @@ app = FastAPI(
     description="REST API and WebSocket interface for AI discussion streams",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # CORS middleware for React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost",           # Nginx proxy (Docker)
-        "http://localhost:80",        # Nginx proxy explicit port
-        "http://localhost:3000",      # Create React App default
-        "http://localhost:5173",      # Vite default
-        "http://localhost:5174",      # Alternative Vite port
-        "http://127.0.0.1",           # Nginx proxy (127.0.0.1)
-        "http://127.0.0.1:80",        # Nginx proxy explicit port
+        "http://localhost",  # Nginx proxy (Docker)
+        "http://localhost:80",  # Nginx proxy explicit port
+        "http://localhost:3000",  # Create React App default
+        "http://localhost:5173",  # Vite default
+        "http://localhost:5174",  # Alternative Vite port
+        "http://127.0.0.1",  # Nginx proxy (127.0.0.1)
+        "http://127.0.0.1:80",  # Nginx proxy explicit port
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
@@ -85,7 +85,7 @@ async def root():
         "version": "1.0.0",
         "docs": "/docs",
         "redoc": "/redoc",
-        "status": "running"
+        "status": "running",
     }
 
 
@@ -102,9 +102,5 @@ async def health():
 if __name__ == "__main__":
     # Run with: python -m backend.main
     uvicorn.run(
-        "backend.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
+        "backend.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
     )

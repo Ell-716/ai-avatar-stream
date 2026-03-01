@@ -3,7 +3,14 @@ import random
 import time
 from datetime import datetime
 
-from config import AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS, TOPIC_SWITCH_EVERY, TOPICS
+from config import (
+    AGENTS,
+    AUDIO_DIR,
+    MAX_TURNS,
+    PAUSE_BETWEEN_TURNS,
+    TOPIC_SWITCH_EVERY,
+    TOPICS,
+)
 from core.avatar import connect as connect_obs
 from core.avatar import set_avatar, set_both_idle
 from core.dialogue import generate_response, reset_history
@@ -48,6 +55,7 @@ def main():
 
         # Start subtle idle motion for both avatars
         from core.avatar import start_idle_animation
+
         start_idle_animation("agent1")
         start_idle_animation("agent2")
 
@@ -77,7 +85,7 @@ def main():
             try:
                 # Alternate speakers: even turns → agent2, odd → agent1
                 agent_key = "agent2" if turn % 2 == 0 else "agent1"
-                agent     = AGENTS[agent_key]
+                agent = AGENTS[agent_key]
 
                 logger.info(f"Turn {turn + 1}/{MAX_TURNS}: {agent['name']} thinking...")
 
@@ -125,6 +133,7 @@ def main():
 
         # ── Stop idle animation ──────────────────────────
         from core.avatar import stop_idle_animation
+
         stop_idle_animation()
 
         # ── Summary statistics ──────────────────────────
@@ -135,7 +144,9 @@ def main():
         logger.info("=" * 60)
         logger.info("Discussion finished!")
         logger.info(f"Duration: {duration:.1f}s")
-        logger.info(f"Successful turns: {successful_turns}/{MAX_TURNS} ({success_rate:.1f}%)")
+        logger.info(
+            f"Successful turns: {successful_turns}/{MAX_TURNS} ({success_rate:.1f}%)"
+        )
         logger.info(f"Failed turns: {failed_turns}")
         logger.info(f"Transcript saved to: transcript.txt")
         logger.info("=" * 60)

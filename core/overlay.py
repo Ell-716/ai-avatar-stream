@@ -17,8 +17,8 @@ def update_overlay(agent_key: str, text: str, topic: str):
     OBS will pick up the change automatically.
     """
     agent = AGENTS[agent_key]
-    color = agent["color"]          # e.g. "#00ff88"
-    name  = agent["name"]           # e.g. "Dr. Elena"
+    color = agent["color"]  # e.g. "#00ff88"
+    name = agent["name"]  # e.g. "Dr. Elena"
 
     # We rebuild the file from scratch each time so animations re-trigger.
     # This is intentional — OBS re-renders the page on file change,
@@ -175,14 +175,16 @@ def update_overlay(agent_key: str, text: str, topic: str):
     # Force OBS browser source to refresh via WebSocket
     try:
         from core.avatar import ws
+
         if ws is not None:
             from obswebsocket import requests as obs_requests
 
             # Press the "Refresh cache" button programmatically
-            ws.call(obs_requests.PressInputPropertiesButton(
-                inputName="Dialogue",
-                propertyName="refreshnocache"
-            ))
+            ws.call(
+                obs_requests.PressInputPropertiesButton(
+                    inputName="Dialogue", propertyName="refreshnocache"
+                )
+            )
             logger.debug("OBS browser source refreshed")
     except Exception as e:
         # Fail silently if OBS not connected or command fails

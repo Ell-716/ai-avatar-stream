@@ -46,11 +46,13 @@ async def transcript_websocket(websocket: WebSocket):
 
     # Send welcome message
     try:
-        await websocket.send_json({
-            "type": "connection",
-            "message": "Connected to transcript stream",
-            "status": stream_manager.get_status()
-        })
+        await websocket.send_json(
+            {
+                "type": "connection",
+                "message": "Connected to transcript stream",
+                "status": stream_manager.get_status(),
+            }
+        )
     except Exception as e:
         logger.error(f"Error sending welcome message: {e}")
         return
@@ -70,7 +72,9 @@ async def transcript_websocket(websocket: WebSocket):
                     try:
                         message = stream_manager.transcript_queue.get_nowait()
                         await websocket.send_json(message)
-                        logger.debug(f"Sent transcript message: {message.get('agent_name', 'topic_change')}")
+                        logger.debug(
+                            f"Sent transcript message: {message.get('agent_name', 'topic_change')}"
+                        )
                     except Exception as e:
                         logger.error(f"Error sending transcript message: {e}")
                         break
@@ -106,15 +110,11 @@ async def transcript_websocket(websocket: WebSocket):
                         await websocket.send_json({"type": "pong"})
                     elif command == "status":
                         status = stream_manager.get_status()
-                        await websocket.send_json({
-                            "type": "status",
-                            "data": status
-                        })
+                        await websocket.send_json({"type": "status", "data": status})
                     else:
-                        await websocket.send_json({
-                            "type": "error",
-                            "message": f"Unknown command: {command}"
-                        })
+                        await websocket.send_json(
+                            {"type": "error", "message": f"Unknown command: {command}"}
+                        )
 
                 except json.JSONDecodeError:
                     logger.warning(f"Invalid JSON from client: {data}")
@@ -137,8 +137,7 @@ async def transcript_websocket(websocket: WebSocket):
     try:
         # Wait for either task to complete (usually due to disconnect)
         done, pending = await asyncio.wait(
-            [sender_task, receiver_task],
-            return_when=asyncio.FIRST_COMPLETED
+            [sender_task, receiver_task], return_when=asyncio.FIRST_COMPLETED
         )
 
         # Cancel any remaining tasks

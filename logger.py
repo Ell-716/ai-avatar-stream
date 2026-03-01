@@ -12,6 +12,7 @@ from typing import Optional
 
 try:
     import colorlog
+
     HAS_COLORLOG = True
 except ImportError:
     HAS_COLORLOG = False
@@ -27,7 +28,9 @@ MAX_BYTES = 10 * 1024 * 1024  # 10 MB per log file
 BACKUP_COUNT = 5  # Keep up to 5 rotated log files
 
 
-def setup_logger(name: Optional[str] = None, level: int = logging.INFO) -> logging.Logger:
+def setup_logger(
+    name: Optional[str] = None, level: int = logging.INFO
+) -> logging.Logger:
     """
     Configure and return a logger with console and file handlers.
 
@@ -58,20 +61,20 @@ def setup_logger(name: Optional[str] = None, level: int = logging.INFO) -> loggi
             fmt="%(log_color)s[%(asctime)s] [%(levelname)-8s] [%(module)s]%(reset)s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
             log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'red,bg_white',
+                "DEBUG": "cyan",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "red,bg_white",
             },
             reset=True,
-            style='%'
+            style="%",
         )
     else:
         # Fallback to standard formatter if colorlog not available
         console_formatter = logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)-8s] [%(module)s] %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
 
     console_handler.setFormatter(console_formatter)
@@ -80,16 +83,13 @@ def setup_logger(name: Optional[str] = None, level: int = logging.INFO) -> loggi
     # ── File Handler (rotating logs) ──
     try:
         file_handler = RotatingFileHandler(
-            LOG_FILE,
-            maxBytes=MAX_BYTES,
-            backupCount=BACKUP_COUNT,
-            encoding='utf-8'
+            LOG_FILE, maxBytes=MAX_BYTES, backupCount=BACKUP_COUNT, encoding="utf-8"
         )
         file_handler.setLevel(logging.DEBUG)  # Log everything to file
 
         file_formatter = logging.Formatter(
             fmt="[%(asctime)s] [%(levelname)-8s] [%(module)s:%(lineno)d] %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)

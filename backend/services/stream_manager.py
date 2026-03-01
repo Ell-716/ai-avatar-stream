@@ -17,9 +17,21 @@ from datetime import datetime
 from queue import Queue  # Thread-safe queue for async/sync communication
 from typing import Dict, List, Optional
 
-from config import AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS, TOPIC_SWITCH_EVERY, TOPICS
+from config import (
+    AGENTS,
+    AUDIO_DIR,
+    MAX_TURNS,
+    PAUSE_BETWEEN_TURNS,
+    TOPIC_SWITCH_EVERY,
+    TOPICS,
+)
 from core.avatar import connect as connect_obs
-from core.avatar import set_avatar, set_both_idle, start_idle_animation, stop_idle_animation
+from core.avatar import (
+    set_avatar,
+    set_both_idle,
+    start_idle_animation,
+    stop_idle_animation,
+)
 from core.dialogue import generate_response, reset_history
 from core.overlay import update_overlay
 from core.transcript import init_transcript, log_message, set_broadcast_callback
@@ -32,7 +44,7 @@ logger = get_logger(__name__)
 class StreamManager:
     """Singleton service to manage AI stream lifecycle."""
 
-    _instance: Optional['StreamManager'] = None
+    _instance: Optional["StreamManager"] = None
     _lock = threading.Lock()
 
     def __new__(cls):
@@ -80,7 +92,7 @@ class StreamManager:
                 return {
                     "success": False,
                     "message": "Stream is already running",
-                    "status": self.get_status()
+                    "status": self.get_status(),
                 }
 
             self.max_turns = max_turns
@@ -102,7 +114,7 @@ class StreamManager:
             return {
                 "success": True,
                 "message": f"Stream started successfully with {max_turns} turns",
-                "status": self.get_status()
+                "status": self.get_status(),
             }
 
     def stop_stream(self) -> Dict[str, any]:
@@ -115,10 +127,7 @@ class StreamManager:
         with self._lock:
             if not self.is_running:
                 logger.warning("Attempted to stop stream that is not running")
-                return {
-                    "success": False,
-                    "message": "No stream is currently running"
-                }
+                return {"success": False, "message": "No stream is currently running"}
 
             self.stop_flag.set()
             logger.info("Stream stop requested")
@@ -126,10 +135,7 @@ class StreamManager:
             # Broadcast status update (will show is_running=False once thread finishes)
             self.broadcast_status()
 
-            return {
-                "success": True,
-                "message": "Stream stopping..."
-            }
+            return {"success": True, "message": "Stream stopping..."}
 
     def get_status(self) -> Dict[str, any]:
         """
@@ -143,7 +149,7 @@ class StreamManager:
             "current_turn": self.current_turn,
             "current_topic": self.current_topic,
             "max_turns": self.max_turns,
-            "errors": self.errors[-10:]  # Last 10 errors
+            "errors": self.errors[-10:],  # Last 10 errors
         }
 
     def broadcast_transcript(self, message: Dict):
@@ -162,7 +168,9 @@ class StreamManager:
         # Put message in thread-safe queue for async WebSocket handlers to consume
         try:
             self.transcript_queue.put_nowait(message)
-            logger.debug(f"Queued transcript message from {message.get('agent_name', 'system')}")
+            logger.debug(
+                f"Queued transcript message from {message.get('agent_name', 'system')}"
+            )
         except Exception as e:
             logger.error(f"Error queuing transcript message: {e}")
 
@@ -172,14 +180,13 @@ class StreamManager:
 
         Called when stream state changes (start/stop/turn update).
         """
-        status_message = {
-            "type": "status",
-            "data": self.get_status()
-        }
+        status_message = {"type": "status", "data": self.get_status()}
 
         try:
             self.transcript_queue.put_nowait(status_message)
-            logger.debug(f"Queued status update: turn={self.current_turn}, running={self.is_running}")
+            logger.debug(
+                f"Queued status update: turn={self.current_turn}, running={self.is_running}"
+            )
         except Exception as e:
             logger.error(f"Error queuing status message: {e}")
 
@@ -221,7 +228,9 @@ class StreamManager:
             audio_file = "opening.mp3"
             if text_to_speech(opening_text, "agent1", audio_file):
                 update_overlay("agent1", opening_text, self.current_topic)
-                log_message(AGENTS["agent1"]["name"], opening_text, topic=self.current_topic)
+                log_message(
+                    AGENTS["agent1"]["name"], opening_text, topic=self.current_topic
+                )
                 play_audio(audio_file, "agent1", opening_text)
                 time.sleep(PAUSE_BETWEEN_TURNS)
             else:
@@ -244,7 +253,9 @@ class StreamManager:
                     agent_key = "agent2" if turn % 2 == 0 else "agent1"
                     agent = AGENTS[agent_key]
 
-                    logger.info(f"Turn {turn + 1}/{self.max_turns}: {agent['name']} thinking...")
+                    logger.info(
+                        f"Turn {turn + 1}/{self.max_turns}: {agent['name']} thinking..."
+                    )
 
                     # Generate reply
                     text = generate_response(agent_key, self.current_topic)
@@ -272,7 +283,9 @@ class StreamManager:
                     time.sleep(PAUSE_BETWEEN_TURNS)
 
                     # Topic switch
-                    if (turn + 1) % TOPIC_SWITCH_EVERY == 0 and turn < self.max_turns - 2:
+                    if (
+                        turn + 1
+                    ) % TOPIC_SWITCH_EVERY == 0 and turn < self.max_turns - 2:
                         self.current_topic = random.choice(
                             [t for t in TOPICS if t != self.current_topic]
                         )
@@ -292,12 +305,16 @@ class StreamManager:
             # Summary
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            success_rate = (successful_turns / self.max_turns * 100) if self.max_turns > 0 else 0
+            success_rate = (
+                (successful_turns / self.max_turns * 100) if self.max_turns > 0 else 0
+            )
 
             logger.info("=" * 60)
             logger.info("Stream finished!")
             logger.info(f"Duration: {duration:.1f}s")
-            logger.info(f"Successful turns: {successful_turns}/{self.max_turns} ({success_rate:.1f}%)")
+            logger.info(
+                f"Successful turns: {successful_turns}/{self.max_turns} ({success_rate:.1f}%)"
+            )
             logger.info(f"Failed turns: {failed_turns}")
             logger.info("=" * 60)
 

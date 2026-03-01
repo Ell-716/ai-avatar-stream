@@ -13,6 +13,7 @@ from utils.retry import retry_with_backoff
 
 logger = get_logger(__name__)
 
+
 def animate_mouth(agent_key: str, duration: float):
     """
     Cycle mouth states during speech to simulate talking.
@@ -44,19 +45,19 @@ def text_to_speech(text: str, agent_key: str, filename: str) -> bool:
     filepath = os.path.join(AUDIO_DIR, filename)
 
     try:
-        logger.debug(f"Converting text to speech for {agent['name']}: {len(text)} chars")
+        logger.debug(
+            f"Converting text to speech for {agent['name']}: {len(text)} chars"
+        )
 
         audio_generator = client.text_to_speech.convert(
-            voice_id=agent["voice_id"],
-            text=text,
-            model_id="eleven_turbo_v2_5"
+            voice_id=agent["voice_id"], text=text, model_id="eleven_turbo_v2_5"
         )
 
         # Collect audio bytes from the iterator
-        audio_bytes = b''.join(audio_generator)
+        audio_bytes = b"".join(audio_generator)
 
         # Write to file
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             f.write(audio_bytes)
 
         # Validate audio file was created successfully
@@ -101,6 +102,7 @@ def play_audio(filename: str, agent_key: str, text: str) -> float:
 
     # Thread for mouth animation
     import threading
+
     stop_animation = threading.Event()
 
     def mouth_loop():
