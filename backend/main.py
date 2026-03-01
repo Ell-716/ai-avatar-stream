@@ -12,13 +12,14 @@ API documentation available at:
     http://localhost:8000/redoc (ReDoc)
 """
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routers import stream, config
-from backend.websockets import transcript
+
 from backend.models.schemas import HealthResponse
+from backend.routers import config, stream
+from backend.websockets import transcript
 from logger import get_logger
-import uvicorn
 
 logger = get_logger(__name__)
 
@@ -35,9 +36,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost",           # Nginx proxy (Docker)
+        "http://localhost:80",        # Nginx proxy explicit port
         "http://localhost:3000",      # Create React App default
         "http://localhost:5173",      # Vite default
         "http://localhost:5174",      # Alternative Vite port
+        "http://127.0.0.1",           # Nginx proxy (127.0.0.1)
+        "http://127.0.0.1:80",        # Nginx proxy explicit port
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",

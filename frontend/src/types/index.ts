@@ -24,8 +24,18 @@ export interface TranscriptMessage {
 }
 
 export interface WebSocketMessage {
-  type: 'connection' | 'transcript' | 'topic_change';
+  type: 'connection' | 'transcript' | 'topic_change' | 'status';
   message?: string;
-  status?: StreamStatus;
-  data?: TranscriptMessage;
+  data?: TranscriptMessage | StreamStatus;
+}
+
+export interface ConfigUpdate {
+  max_turns: number;
+  pause_between_turns: number;
+}
+
+export interface LogEntry {
+  timestamp: string;
+  level: 'info' | 'warning' | 'error';
+  message: string;
 }

@@ -12,13 +12,16 @@ Requires:
     - pip install obs-websocket-py
 """
 
-from obswebsocket import obsws, requests as obs_requests
-from obswebsocket.exceptions import ConnectionFailure
-from config import AGENTS
-from logger import get_logger
 import os
 import threading
 import time
+
+from obswebsocket import obsws
+from obswebsocket import requests as obs_requests
+from obswebsocket.exceptions import ConnectionFailure
+
+from config import AGENTS
+from logger import get_logger
 
 logger = get_logger(__name__)
 

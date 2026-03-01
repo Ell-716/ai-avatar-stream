@@ -1,8 +1,8 @@
-from groq import Groq
-from groq import RateLimitError, APIError
-from config import GROQ_API_KEY, GROQ_MODEL, CONTEXT_WINDOW, AGENTS
-from utils.retry import retry_with_backoff
+from groq import APIError, Groq, RateLimitError
+
+from config import AGENTS, CONTEXT_WINDOW, GROQ_API_KEY, GROQ_MODEL
 from logger import get_logger
+from utils.retry import retry_with_backoff
 
 logger = get_logger(__name__)
 client = Groq(api_key=GROQ_API_KEY)

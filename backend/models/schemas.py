@@ -5,8 +5,9 @@ Defines all data structures used by the FastAPI endpoints for
 request validation and response serialization.
 """
 
+from typing import Dict, List, Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict
 
 
 class StreamStatus(BaseModel):

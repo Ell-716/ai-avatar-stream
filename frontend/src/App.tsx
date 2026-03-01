@@ -4,12 +4,13 @@ import { TranscriptViewer } from './components/TranscriptViewer';
 import { ConfigPanel } from './components/ConfigPanel';
 import { LogsViewer } from './components/LogsViewer';
 import { streamAPI, createWebSocket } from './api/client';
-import type { StreamStatus, TranscriptMessage } from './types';
+import type { StreamStatus, TranscriptMessage, ConfigUpdate, LogEntry } from './types';
+import { AxiosError } from 'axios';
 
 function App() {
   const [status, setStatus] = useState<StreamStatus | null>(null);
   const [transcriptMessages, setTranscriptMessages] = useState<TranscriptMessage[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [maxTurns, setMaxTurns] = useState(5);
   const [pauseBetweenTurns, setPauseBetweenTurns] = useState(1);
@@ -30,15 +31,17 @@ function App() {
 
   // Setup WebSocket for real-time transcript and status updates
   useEffect(() => {
-    const websocket = createWebSocket((data) => {
-      if (data.type === 'transcript' && data.data) {
-        setTranscriptMessages((prev) => [...prev, data.data]);
-        addLog('info', `${data.data.agent_name} spoke`);
+    const websocket = createWebSocket((message) => {
+      if (message.type === 'transcript' && message.data) {
+        const transcriptData = message.data as TranscriptMessage;
+        setTranscriptMessages((prev) => [...prev, transcriptData]);
+        addLog('info', `${transcriptData.agent_name} spoke`);
       }
-      if (data.type === 'status' && data.data) {
-        setStatus(data.data);
+      if (message.type === 'status' && message.data) {
+        const statusData = message.data as StreamStatus;
+        setStatus(statusData);
       }
-      if (data.type === 'connection') {
+      if (message.type === 'connection') {
         addLog('info', 'Connected to transcript stream');
       }
     });
@@ -48,7 +51,7 @@ function App() {
     };
   }, []);
 
-  const addLog = (level: string, message: string) => {
+  const addLog = (level: LogEntry['level'], message: string) => {
     setLogs((prev) => [
       ...prev,
       { timestamp: new Date().toISOString(), level, message },
@@ -61,8 +64,9 @@ function App() {
       await streamAPI.start(maxTurns);
       addLog('info', `Stream started with ${maxTurns} turns`);
       setTranscriptMessages([]); // Clear previous transcript
-    } catch (error: any) {
-      addLog('error', error.response?.data?.detail || 'Failed to start stream');
+    } catch (error) {
+      const axiosError = error as AxiosError<{ detail?: string }>;
+      addLog('error', axiosError.response?.data?.detail || 'Failed to start stream');
     } finally {
       setIsLoading(false);
     }
@@ -73,28 +77,21 @@ function App() {
     try {
       await streamAPI.stop();
       addLog('info', 'Stream stopped');
-    } catch (error: any) {
-      addLog('error', error.response?.data?.detail || 'Failed to stop stream');
+    } catch (error) {
+      const axiosError = error as AxiosError<{ detail?: string }>;
+      addLog('error', axiosError.response?.data?.detail || 'Failed to stop stream');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveConfig = async (config: any) => {
-    try {
-      // Update local state with config values
-      if (config.max_turns !== undefined) {
-        setMaxTurns(config.max_turns);
-      }
-      if (config.pause_between_turns !== undefined) {
-        setPauseBetweenTurns(config.pause_between_turns);
-      }
+  const handleSaveConfig = async (config: ConfigUpdate) => {
+    // Update local state with config values
+    setMaxTurns(config.max_turns);
+    setPauseBetweenTurns(config.pause_between_turns);
 
-      // For MVP, just log - full implementation would call configAPI.updateConfig
-      addLog('info', 'Config updated (restart stream to apply)');
-    } catch (error) {
-      addLog('error', 'Failed to save config');
-    }
+    // For MVP, just log - full implementation would call configAPI.updateConfig
+    addLog('info', 'Config updated (restart stream to apply)');
   };
 
   return (

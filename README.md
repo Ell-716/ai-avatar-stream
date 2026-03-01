@@ -180,6 +180,67 @@ The stream demonstrates:
 
 ---
 
+## Docker Deployment
+
+### Quick Start with Docker
+
+```bash
+# 1. Create .env file with your API keys
+cp .env.example .env
+# Edit .env and add your GROQ_API_KEY and ELEVENLABS_API_KEY
+
+# 2. Build and start services
+docker-compose up --build
+
+# 3. Access the application
+# Frontend: http://localhost
+# Backend API: http://localhost:8000
+# API Docs: http://localhost:8000/docs
+```
+
+### Production Deployment
+
+```bash
+# Build images
+docker-compose build
+
+# Start in detached mode
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Health Checks
+
+- Backend: `curl http://localhost:8000/health`
+- Frontend: `curl http://localhost/`
+
+### Architecture
+
+- **Backend**: FastAPI server with REST API and WebSocket
+- **Frontend**: React + TypeScript control panel
+- **Nginx**: Production web server with API/WebSocket proxying
+- **Docker Compose**: Orchestrates both services with health checks
+
+---
+
+## CI/CD
+
+GitHub Actions automatically:
+- Lints Python (Ruff, Black, isort)
+- Lints TypeScript (ESLint)
+- Builds Docker images
+- Tests with docker-compose
+- Runs on every push and PR
+
+See `.github/workflows/ci.yml` for details.
+
+---
+
 ## License
 
 MIT
