@@ -58,10 +58,13 @@ def log_message(agent_name: str, text: str, topic: str | None = None):
         # Broadcast to WebSocket if callback registered
         if _broadcast_callback:
             message = {
-                "timestamp": iso_timestamp,
-                "agent_name": agent_name,
-                "text": text,
-                "topic": topic
+                "type": "transcript",
+                "data": {
+                    "timestamp": iso_timestamp,
+                    "agent_name": agent_name,
+                    "text": text,
+                    "topic": topic
+                }
             }
             try:
                 _broadcast_callback(message)
