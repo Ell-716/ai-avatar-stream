@@ -35,9 +35,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost",           # Nginx proxy (Docker)
+        "http://localhost:80",        # Nginx proxy explicit port
         "http://localhost:3000",      # Create React App default
         "http://localhost:5173",      # Vite default
         "http://localhost:5174",      # Alternative Vite port
+        "http://127.0.0.1",           # Nginx proxy (127.0.0.1)
+        "http://127.0.0.1:80",        # Nginx proxy explicit port
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",

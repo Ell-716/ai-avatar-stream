@@ -35,7 +35,14 @@ export const configAPI = {
 
 // WebSocket helper
 export const createWebSocket = (onMessage: (data: any) => void) => {
-  const ws = new WebSocket(`ws://localhost:8000/ws/transcript`);
+  // Determine WebSocket URL based on environment
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsHost = API_BASE_URL
+    ? API_BASE_URL.replace(/^https?:/, wsProtocol)
+    : `${wsProtocol}//${window.location.host}`;
+  const wsUrl = `${wsHost}/ws/transcript`;
+
+  const ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
     console.log('WebSocket connected');
