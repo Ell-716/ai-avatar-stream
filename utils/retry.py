@@ -8,9 +8,10 @@ Usage:
         pass
 """
 
-import time
 import functools
-from typing import Callable, TypeVar, Any
+import time
+from typing import Any, Callable, TypeVar
+
 from logger import get_logger
 
 logger = get_logger(__name__)

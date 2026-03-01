@@ -1,21 +1,16 @@
 import os
-import time
 import random
+import time
 from datetime import datetime
 
-from config import (
-    AGENTS,
-    TOPICS,
-    AUDIO_DIR,
-    MAX_TURNS,
-    TOPIC_SWITCH_EVERY,
-    PAUSE_BETWEEN_TURNS,
-)
+from config import (AGENTS, AUDIO_DIR, MAX_TURNS, PAUSE_BETWEEN_TURNS,
+                    TOPIC_SWITCH_EVERY, TOPICS)
+from core.avatar import connect as connect_obs
+from core.avatar import set_avatar, set_both_idle
 from core.dialogue import generate_response, reset_history
-from core.tts import text_to_speech, play_audio, estimate_duration
 from core.overlay import update_overlay
 from core.transcript import init_transcript, log_message
-from core.avatar import connect as connect_obs, set_avatar, set_both_idle
+from core.tts import estimate_duration, play_audio, text_to_speech
 from logger import get_logger
 
 logger = get_logger(__name__)

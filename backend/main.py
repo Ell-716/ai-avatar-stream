@@ -12,13 +12,14 @@ API documentation available at:
     http://localhost:8000/redoc (ReDoc)
 """
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routers import stream, config
-from backend.websockets import transcript
+
 from backend.models.schemas import HealthResponse
+from backend.routers import config, stream
+from backend.websockets import transcript
 from logger import get_logger
-import uvicorn
 
 logger = get_logger(__name__)
 

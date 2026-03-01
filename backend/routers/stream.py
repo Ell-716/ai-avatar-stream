@@ -8,13 +8,10 @@ Provides REST API endpoints for:
 """
 
 from fastapi import APIRouter, HTTPException
-from backend.models.schemas import (
-    StreamStatus,
-    StreamStartRequest,
-    StreamStartResponse,
-    StreamStopRequest,
-    StreamStopResponse
-)
+
+from backend.models.schemas import (StreamStartRequest, StreamStartResponse,
+                                    StreamStatus, StreamStopRequest,
+                                    StreamStopResponse)
 from backend.services.stream_manager import StreamManager
 from logger import get_logger
 

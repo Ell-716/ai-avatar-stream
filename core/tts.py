@@ -1,13 +1,15 @@
 import os
 import platform
-import time
 import subprocess
-from core.avatar import set_avatar
+import time
+
 from elevenlabs.client import ElevenLabs
 from elevenlabs.core import ApiError as ElevenLabsAPIError
-from config import ELEVENLABS_API_KEY, AGENTS, AUDIO_DIR, CHARS_PER_SECOND
-from utils.retry import retry_with_backoff
+
+from config import AGENTS, AUDIO_DIR, CHARS_PER_SECOND, ELEVENLABS_API_KEY
+from core.avatar import set_avatar
 from logger import get_logger
+from utils.retry import retry_with_backoff
 
 logger = get_logger(__name__)
 

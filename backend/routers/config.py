@@ -7,11 +7,14 @@ Provides REST API endpoints for:
 - Updating stream configuration
 """
 
-from fastapi import APIRouter, HTTPException
 from typing import Dict, List
-from backend.models.schemas import AgentConfig, ConfigUpdate, ConfigUpdateResponse
-from logger import get_logger
+
+from fastapi import APIRouter, HTTPException
+
 import config as app_config
+from backend.models.schemas import (AgentConfig, ConfigUpdate,
+                                    ConfigUpdateResponse)
+from logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/config", tags=["config"])

@@ -1,7 +1,8 @@
 from datetime import datetime
+from typing import Callable, Dict, Optional
+
 from config import TRANSCRIPT_FILE
 from logger import get_logger
-from typing import Optional, Callable, Dict
 
 logger = get_logger(__name__)
 

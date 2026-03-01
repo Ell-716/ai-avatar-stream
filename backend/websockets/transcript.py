@@ -7,11 +7,13 @@ as they are generated during the AI discussion.
 Uses a thread-safe queue to receive messages from the sync stream thread.
 """
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from backend.services.stream_manager import StreamManager
-from logger import get_logger
 import asyncio
 import json
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from backend.services.stream_manager import StreamManager
+from logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
