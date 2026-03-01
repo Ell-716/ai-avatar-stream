@@ -94,6 +94,10 @@ class StreamManager:
             self.stream_thread.start()
 
             logger.info(f"Stream started with max_turns={max_turns}")
+
+            # Broadcast initial status
+            self.broadcast_status()
+
             return {
                 "success": True,
                 "message": f"Stream started successfully with {max_turns} turns",
@@ -117,6 +121,9 @@ class StreamManager:
 
             self.stop_flag.set()
             logger.info("Stream stop requested")
+
+            # Broadcast status update (will show is_running=False once thread finishes)
+            self.broadcast_status()
 
             return {
                 "success": True,
@@ -157,6 +164,23 @@ class StreamManager:
             logger.debug(f"Queued transcript message from {message.get('agent_name', 'system')}")
         except Exception as e:
             logger.error(f"Error queuing transcript message: {e}")
+
+    def broadcast_status(self):
+        """
+        Send status update to WebSocket clients via thread-safe queue.
+
+        Called when stream state changes (start/stop/turn update).
+        """
+        status_message = {
+            "type": "status",
+            "data": self.get_status()
+        }
+
+        try:
+            self.transcript_queue.put_nowait(status_message)
+            logger.debug(f"Queued status update: turn={self.current_turn}, running={self.is_running}")
+        except Exception as e:
+            logger.error(f"Error queuing status message: {e}")
 
     def _run_stream(self):
         """
@@ -211,6 +235,9 @@ class StreamManager:
 
                 try:
                     self.current_turn = turn + 1
+
+                    # Broadcast status update for new turn
+                    self.broadcast_status()
 
                     # Alternate speakers
                     agent_key = "agent2" if turn % 2 == 0 else "agent1"
@@ -280,4 +307,8 @@ class StreamManager:
             with self._lock:
                 self.is_running = False
                 self.current_turn = 0
+
+            # Broadcast final status (stream stopped)
+            self.broadcast_status()
+
             logger.info("Stream thread ended")
