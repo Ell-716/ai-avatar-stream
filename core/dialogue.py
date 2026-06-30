@@ -53,7 +53,7 @@ def generate_response(agent_key: str, topic: str) -> str:
             messages=messages,
             model=GROQ_MODEL,
             temperature=0.8,
-            max_tokens=150,
+            max_tokens=400,  # reasoning model uses ~100-200 tokens internally before writing content
         )
 
         text = response.choices[0].message.content.strip()
