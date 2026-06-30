@@ -226,15 +226,20 @@ class StreamManager:
             )
 
             audio_file = "opening.mp3"
-            if text_to_speech(opening_text, "agent1", audio_file):
-                update_overlay("agent1", opening_text, self.current_topic)
-                log_message(
-                    AGENTS["agent1"]["name"], opening_text, topic=self.current_topic
-                )
-                play_audio(audio_file, "agent1", opening_text)
-                time.sleep(PAUSE_BETWEEN_TURNS)
-            else:
-                logger.warning("Failed to generate opening audio, continuing anyway")
+            try:
+                if text_to_speech(opening_text, "agent1", audio_file):
+                    update_overlay("agent1", opening_text, self.current_topic)
+                    log_message(
+                        AGENTS["agent1"]["name"], opening_text, topic=self.current_topic
+                    )
+                    play_audio(audio_file, "agent1", opening_text)
+                    time.sleep(PAUSE_BETWEEN_TURNS)
+                else:
+                    logger.warning("Opening skipped - TTS failed")
+                    self.errors.append("Opening: TTS failed")
+            except Exception as e:
+                logger.error(f"Error in opening TTS: {e}", exc_info=True)
+                self.errors.append(f"Opening: {str(e)}")
 
             # Main loop
             for turn in range(self.max_turns):
